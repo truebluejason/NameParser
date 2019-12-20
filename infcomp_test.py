@@ -9,7 +9,7 @@ parser.add_argument('--num_samples', help='# samples to sample from the posterio
 parser.add_argument('--model_path', help='Path to the saved model', nargs='?', default='/scratch/name_parser', type=str)
 args = parser.parse_args()
 
-OBSERVED = args.number
+OBSERVED = args.name
 NUM_TRACES = args.num_traces
 NUM_SAMPLES = args.num_samples
 MODEL_PATH = args.model_path
