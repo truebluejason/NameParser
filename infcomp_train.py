@@ -1,11 +1,11 @@
 import argparse
 import pyprob
-from infcomp import NameParser
+from new_infcomp import NameParser
 
 parser = argparse.ArgumentParser()
 parser.add_argument('--peak_prob', help='How error intolerant the model will be from 0 to 1', nargs='?', default=0.99, type=float)
 parser.add_argument('--num_traces', help='# traces to evaluate per training step', nargs='?', default=5000000, type=int)
-parser.add_argument('--batch_size', help='Batch size for training', nargs='?', default=128, type=int)
+parser.add_argument('--batch_size', help='Batch size for training', nargs='?', default=32, type=int)
 parser.add_argument('--model_path', help='Path to save the saved model', nargs='?', default='/scratch/name_parser', type=str)
 parser.add_argument('--cont', help='Continue training an existing model', nargs='?', default=False, type=bool)
 args = parser.parse_args()

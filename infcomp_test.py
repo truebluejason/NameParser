@@ -1,6 +1,6 @@
 import argparse
 import pyprob
-from infcomp import NameParser
+from new_infcomp import NameParser
 
 parser = argparse.ArgumentParser()
 parser.add_argument('--name', help='Name to parse', nargs='?', default='jason yoo', type=str)
