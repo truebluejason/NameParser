@@ -1,6 +1,6 @@
 import argparse
 import pyprob
-from new_infcomp import NameParser
+from pretrained_infcomp import NameParser
 
 parser = argparse.ArgumentParser()
 parser.add_argument('--peak_prob', help='How error intolerant the model will be from 0 to 1', nargs='?', default=0.99, type=float)
@@ -26,7 +26,7 @@ model = NameParser(peak_prob=PEAK_PROB)
 if CONTINUE: model.load_inference_network(MODEL_PATH)
 model.learn_inference_network(
     inference_network=pyprob.InferenceNetwork.LSTM,
-    observe_embeddings={'name_string': {'dim' : 256}},
+    observe_embeddings={'name_string': {'dim' : 512}},
     num_traces=NUM_TRACES,
     batch_size=BATCH_SIZE,
     save_file_name_prefix=MODEL_PATH,
