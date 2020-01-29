@@ -90,9 +90,9 @@ class OneHot2DCategorical(dists.Categorical):
 class NameParser(Model):
     def __init__(self, peak_prob=0.9):
         # Initialize RNNs with pretrained weights
-        self.firstname_rnn = PretrainedRNN(input_size=N_CHARACTERS, hidden_size=128, output_size=N_CHARACTERS)
-        self.middlename_rnn = PretrainedRNN(input_size=N_CHARACTERS, hidden_size=128, output_size=N_CHARACTERS)
-        self.lastname_rnn = PretrainedRNN(input_size=N_CHARACTERS, hidden_size=128, output_size=N_CHARACTERS)
+        self.firstname_rnn = PretrainedRNN(input_size=N_CHARACTERS, hidden_size=128, output_size=N_CHARACTERS).to(DEVICE)
+        self.middlename_rnn = PretrainedRNN(input_size=N_CHARACTERS, hidden_size=128, output_size=N_CHARACTERS).to(DEVICE)
+        self.lastname_rnn = PretrainedRNN(input_size=N_CHARACTERS, hidden_size=128, output_size=N_CHARACTERS).to(DEVICE)
         self.firstname_rnn.load_state_dict(torch.load('nn_model/pretrained/first', map_location=DEVICE))
         self.middlename_rnn.load_state_dict(torch.load('nn_model/pretrained/middle', map_location=DEVICE))
         self.lastname_rnn.load_state_dict(torch.load('nn_model/pretrained/last', map_location=DEVICE))
