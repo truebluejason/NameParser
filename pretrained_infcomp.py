@@ -148,7 +148,7 @@ class NameParser(Model):
         for i, character in enumerate(noised_name):
             probs[i, CHAR_TO_INDEX[character]] = self.peak_prob
         pyprob.observe(OneHot2DCategorical(probs), name=f"name_string")
-
+    
         return noised_name, {'firstname': firstname,'middlename': middlename, 'lastname': lastname, 'format_index': format_index}
     
     def get_observes(self, name_string):
