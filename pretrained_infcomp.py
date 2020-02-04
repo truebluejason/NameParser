@@ -44,7 +44,7 @@ def character_to_tensor(char) -> torch.tensor:
     result[0,CHAR_TO_INDEX[char]] = 1
     return result
 
-
+"""
 class PretrainedRNN(nn.Module):
     def __init__(self, input_size, hidden_size, output_size, max_seq_len=MAX_OUTPUT_LEN, num_layers=1, dropout=0.):
         super(PretrainedRNN, self).__init__()
@@ -57,14 +57,38 @@ class PretrainedRNN(nn.Module):
         self.softmax = nn.Softmax(dim=1)
 
     def forward(self, input, hidden):
+        #input: <batch size x input size>
+        #hidden: <num layers x batch size x hidden size>
+        #gru_input: <1 x batch size x input size>
+        #gru_output: <1 x batch size x hidden size>
+        input = self.i2h(input).unsqueeze(0)
+        gru_output, gru_hidden = self.gru(input, hidden)
+        output = self.o2o(gru_output.squeeze(0))
+        output = self.softmax(output)
+        return output, gru_hidden
+    
+    def init_hidden(self, batch_size):
+        return torch.zeros(self.num_layers, batch_size, self.hidden_size).to(DEVICE)
+"""
+class PretrainedRNN(nn.Module):
+    def __init__(self, input_size, hidden_size, output_size, max_seq_len=10, num_layers=4, dropout=0.):
+        super(PretrainedRNN, self).__init__()
+        self.hidden_size = hidden_size
+        self.max_seq_len = 10
+        self.num_layers = num_layers
+
+        self.o2o = nn.Linear(hidden_size, output_size)
+        self.gru = nn.GRU(input_size=input_size, hidden_size=hidden_size, num_layers=num_layers, dropout=dropout)
+        self.softmax = nn.LogSoftmax(dim=1)
+
+    def forward(self, input, hidden):
         """
         input: <batch size x input size>
         hidden: <num layers x batch size x hidden size>
         gru_input: <1 x batch size x input size>
         gru_output: <1 x batch size x hidden size>
         """
-        input = self.i2h(input).unsqueeze(0)
-        gru_output, gru_hidden = self.gru(input, hidden)
+        gru_output, gru_hidden = self.gru(input.unsqueeze(0), hidden)
         output = self.o2o(gru_output.squeeze(0))
         output = self.softmax(output)
         return output, gru_hidden
@@ -90,9 +114,9 @@ class OneHot2DCategorical(dists.Categorical):
 class NameParser(Model):
     def __init__(self, peak_prob=0.9):
         # Initialize RNNs with pretrained weights
-        self.firstname_rnn = PretrainedRNN(input_size=N_CHARACTERS, hidden_size=128, output_size=N_CHARACTERS).to(DEVICE)
-        self.middlename_rnn = PretrainedRNN(input_size=N_CHARACTERS, hidden_size=128, output_size=N_CHARACTERS).to(DEVICE)
-        self.lastname_rnn = PretrainedRNN(input_size=N_CHARACTERS, hidden_size=128, output_size=N_CHARACTERS).to(DEVICE)
+        self.firstname_rnn = PretrainedRNN(input_size=N_CHARACTERS, hidden_size=512, output_size=N_CHARACTERS, num_layers=4).to(DEVICE)
+        self.middlename_rnn = PretrainedRNN(input_size=N_CHARACTERS, hidden_size=512, output_size=N_CHARACTERS, num_layers=4).to(DEVICE)
+        self.lastname_rnn = PretrainedRNN(input_size=N_CHARACTERS, hidden_size=512, output_size=N_CHARACTERS, num_layers=4).to(DEVICE)
         self.firstname_rnn.load_state_dict(torch.load('nn_model/pretrained/first', map_location=DEVICE))
         self.middlename_rnn.load_state_dict(torch.load('nn_model/pretrained/middle', map_location=DEVICE))
         self.lastname_rnn.load_state_dict(torch.load('nn_model/pretrained/last', map_location=DEVICE))

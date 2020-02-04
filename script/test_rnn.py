@@ -7,13 +7,14 @@ parser.add_argument('--model_path', help='Path to save the saved model', type=st
 parser.add_argument('--num_samples', help='# names to generate', nargs='?', default=10, type=int)
 parser.add_argument('--max_name_len', help='Maximum name length', nargs='?', default=10, type=int)
 parser.add_argument('--hidden_size', help='Hidden layer size for the model', nargs='?', default=256, type=int)
+parser.add_argument('--num_layers', help='# layers', nargs='?', default=4, type=int)
 args = parser.parse_args()
 
 MAX_NAME_LEN = args.max_name_len
-DEVICE = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+DEVICE = torch.device("cpu")
 
 model = Model(input_size=len(ALL_CHARACTERS), hidden_size=args.hidden_size, output_size=len(ALL_CHARACTERS), max_seq_len=MAX_NAME_LEN)
-model.load_state_dict(torch.load(args.model_path), map_location=DEVICE)
+model.load_state_dict(torch.load(args.model_path, map_location=DEVICE))
 def strings_to_tensor(names: list, max_name_len: int = 10):
     # Convert a list of names into a 3D tensor
     tensor = torch.zeros(max_name_len, len(names), len(ALL_CHARACTERS)).to(DEVICE)
@@ -51,7 +52,7 @@ def test(model):
         for i in range(len(mode_names)):
             mode_names[i] += mode_characters[i]
     mode_names = list(map(lambda x: x[:x.find(EOS)] if x.find(EOS) >= 0 else x, mode_names))
-    return sample_names, mode_names
+    return sorted(sample_names), sorted(mode_names)
 
 samples, modes = test(model)
 print(f"Sampled Names: {samples}")

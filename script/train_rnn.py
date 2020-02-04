@@ -103,6 +103,8 @@ if __name__ == "__main__":
 
     df = pd.read_csv("data/LN_Train.csv")
     df = clean_names(df)
+    # Duplicate rows with count>10000
++   df = df.append([df[df['count']>10000]]*100,ignore_index=True)
     print(f"Data Size: {len(df)}")
 
     model = Model(input_size=len(ALL_CHARACTERS), hidden_size=HIDDEN_SIZE, output_size=len(ALL_CHARACTERS), max_seq_len=MAX_NAME_LEN).to(DEVICE)
