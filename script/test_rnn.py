@@ -10,12 +10,13 @@ parser.add_argument('--hidden_size', help='Hidden layer size for the model', nar
 args = parser.parse_args()
 
 MAX_NAME_LEN = args.max_name_len
+DEVICE = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
 model = Model(input_size=len(ALL_CHARACTERS), hidden_size=args.hidden_size, output_size=len(ALL_CHARACTERS), max_seq_len=MAX_NAME_LEN)
-model.load_state_dict(torch.load(args.model_path))
+model.load_state_dict(torch.load(args.model_path), map_location=DEVICE)
 def strings_to_tensor(names: list, max_name_len: int = 10):
     # Convert a list of names into a 3D tensor
-    tensor = torch.zeros(max_name_len, len(names), len(ALL_CHARACTERS))
+    tensor = torch.zeros(max_name_len, len(names), len(ALL_CHARACTERS)).to(DEVICE)
     for i_name, name in enumerate(names):
         for i_char, letter in enumerate(name):
             tensor[i_char][i_name][ALL_CHARACTERS.find(letter)] = 1

@@ -11,7 +11,7 @@ DEVICE = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
 
 class Model(nn.Module):
-    def __init__(self, input_size, hidden_size, output_size, max_seq_len=10, num_layers=2, dropout=0.):
+    def __init__(self, input_size, hidden_size, output_size, max_seq_len=10, num_layers=4, dropout=0.):
         super(Model, self).__init__()
         self.hidden_size = hidden_size
         self.max_seq_len = 10
@@ -44,8 +44,8 @@ class Model(nn.Module):
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
-    parser.add_argument('--name', help='first/middle/last', nargs='?', default='first', type=str)
-    parser.add_argument('--model_path', help='Path to save the saved model', nargs='?', default='nn_model/pretrained/first', type=str)
+    parser.add_argument('--name', help='first/middle/last', nargs='?', default='last_fb', type=str)
+    parser.add_argument('--model_path', help='Path to save the saved model', nargs='?', default='nn_model/last_fb', type=str)
     parser.add_argument('--max_name_len', help='Maximum name length', nargs='?', default=10, type=int)
     parser.add_argument('--hidden_size', help='Hidden layer size for the model', nargs='?', default=256, type=int)
     parser.add_argument('--batch_size', help='Batch size for training', nargs='?', default=256, type=int)
@@ -57,7 +57,7 @@ if __name__ == "__main__":
     MAX_NAME_LEN = args.max_name_len
     NAME = args.name
     NUM_EPOCH = args.num_epoch
-    if NAME not in ['first','middle','last']: raise Exception("--name must be first, middle, or last")
+    if NAME not in ['first','middle','last','last_fb']: raise Exception("--name must be first, middle, or last")
 
     def clean_names(df):
         # Only include names with all valid characters and are shorter than max name length
@@ -100,13 +100,8 @@ if __name__ == "__main__":
         mode_names = list(map(lambda x: x[:x.find(EOS)+1] if x.find(EOS) >= 0 else x, mode_names))
         return sample_names, mode_names
 
-    """
-    df = pd.read_csv(f"data/{NAME}.csv")
-    df = clean_names(df)
-    names = df['name'].tolist()
-    dist = torch.distributions.Categorical(torch.tensor((df['count']/df['count'].sum()).tolist()))
-    """
-    df = pd.read_csv("data/Train.csv")
+
+    df = pd.read_csv("data/LN_Train.csv")
     df = clean_names(df)
     print(f"Data Size: {len(df)}")
 
